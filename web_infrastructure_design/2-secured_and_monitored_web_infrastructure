@@ -1,0 +1,23 @@
+# 2. Secured and monitored web infrastructure
+
+This infrastructure is a three-server setup designed for redundancy, security, and monitoring, hosting www.foobar.com.
+
+## Specifics
+- **Firewalls (3)**: Added to protect each server by filtering incoming and outgoing network traffic based on security rules. They block unauthorized access.
+- **SSL Certificate**: Used to encrypt the traffic between the user's browser and the web server (HTTPS). This ensures data privacy and integrity.
+- **Monitoring Clients (3)**: Installed on each server to collect metrics and logs. Monitoring is used to track the health, performance, and availability of the infrastructure.
+- **Data Collection**: The monitoring tool (e.g., Sumologic) collects data through an agent/client installed on the OS, which pushes logs and metrics to a centralized dashboard.
+- **Monitoring QPS**: To monitor the web server's QPS (Queries Per Second), I would analyze the access logs of the web server (Nginx) to count the number of requests received per second.
+
+## Why these elements?
+- **Firewalls**: To isolate servers and prevent attacks like unauthorized SSH attempts.
+- **HTTPS**: To protect sensitive user data (like passwords) from "man-in-the-middle" attacks.
+- **Monitoring**: To be alerted immediately if a service (like MySQL) crashes or if the server runs out of RAM/CPU.
+
+## Issues
+- **SSL Termination at Load Balancer**: If SSL is decrypted at the load balancer, the traffic between the load balancer and the backend servers is unencrypted (plain HTTP), which is a security risk in the internal network.
+- **Single Master MySQL**: Having only one server capable of accepting writes means if the master database fails, the application cannot perform write operations (Single Point of Failure for writes).
+- **Servers with same components**: Having the web server, app server, and database on every machine makes scaling difficult and increases the attack surface. It is better to separate layers (e.g., dedicated DB servers).
+
+## Diagram Link
+[https://imgur.com/a/y4emKDo]
