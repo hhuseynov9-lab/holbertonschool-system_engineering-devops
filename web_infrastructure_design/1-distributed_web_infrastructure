@@ -1,0 +1,62 @@
+# 1. Distributed Web Infrastructure Design
+
+## Infrastructure Diagram
+![www.foobar.com Infrastructure](https://imgur.com/a/kinSoN2)
+*Figure 1: High-level overview of the distributed three-server architecture.*
+
+---
+
+## Infrastructure Overview
+This design implements a distributed three-server infrastructure for **www.foobar.com**. The goal is to provide redundancy and better load management compared to a single-server setup.
+
+### Components and Their Roles
+
+1.  **Load Balancer (HAProxy):**
+    * **Why:** To distribute incoming web traffic across multiple backend servers.
+    * **Benefit:** Increases availability and scalability; if one server fails, the other can still handle requests.
+
+2.  **Web Server (Nginx):**
+    * **Why:** Acts as the entry point on each server node.
+    * **Benefit:** Highly efficient at serving static files (HTML, CSS) and acting as a reverse proxy for the application server.
+
+3.  **Application Server:**
+    * **Why:** Executes the backend logic (the code base).
+    * **Benefit:** Separates the processing of dynamic content from the static content delivery, making it easier to scale.
+
+4.  **Database (MySQL):**
+    * **Why:** To store application data persistently.
+    * **Benefit:** Centralizes data management for the application nodes.
+
+---
+
+## Technical Specifics
+
+### Load Balancer Algorithm: Round Robin
+* **How it works:** The load balancer sends requests to the backend servers in a sequential rotation. The first request goes to Server 1, the second to Server 2, and the cycle repeats.
+* **Advantage:** It ensures an equal distribution of traffic, assuming the servers have similar hardware capabilities.
+
+### Setup: Active-Active
+* **Active-Active:** Both application servers are online and processing requests simultaneously. This maximizes resource utilization.
+* **Active-Passive:** Only one server is active while the other is on standby. The passive server only takes over if the active one fails.
+* **This Infrastructure:** Uses an **Active-Active** setup for the backend servers.
+
+### Database Primary-Replica (Master-Slave) Cluster
+* **How it works:** All data writes (INSERT, UPDATE, DELETE) occur on the **Primary** node. These changes are replicated to the **Replica** node.
+* **Application Implementation:**
+    * The app sends **Write** operations to the **Primary** node.
+    * The app sends **Read** operations to the **Replica** node to offload traffic from the Primary.
+
+---
+
+## Identified Issues & Risks
+
+1.  **Single Point of Failure (SPOF):**
+    * **HAProxy:** We only have one load balancer. If it crashes, the whole site goes down.
+    * **Primary DB:** If the Primary database fails, the site can no longer accept new data or updates.
+
+2.  **Security Risks:**
+    * **No Firewall:** All ports are potentially open to the internet.
+    * **No HTTPS:** Traffic is unencrypted (HTTP), making it vulnerable to interception and "Man-in-the-Middle" attacks.
+
+3.  **No Monitoring:**
+    * There is no way to track server health or performance. We won't know there is a problem until users report that the site is down.
