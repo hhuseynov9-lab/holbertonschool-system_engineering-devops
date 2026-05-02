@@ -1,1 +1,20 @@
+# 0. Simple web stack
 
+This infrastructure consists of a single server hosting www.foobar.com.
+
+## Specifics
+- **Server**: A physical or virtual machine providing resources to clients.
+- **Domain Name**: foobar.com maps a human-readable name to the IP 8.8.8.8.
+- **DNS Record Type**: The 'www' record is an A record pointing to 8.8.8.8.
+- **Web Server (Nginx)**: Handles HTTP requests and serves static content.
+- **Application Server**: Executes the application code and processes dynamic requests.
+- **Database (MySQL)**: Stores and manages the structured data of the website.
+- **Communication**: The server communicates with the user via HTTP/HTTPS protocols.
+
+## Issues
+- **SPOF (Single Point of Failure)**: If the server fails, the entire website goes down.
+- **Downtime**: Maintenance and deployments require service restarts, causing downtime.
+- **Scalability**: A single server cannot handle massive traffic spikes (cannot scale horizontally).
+
+## Diagram Link
+[https://imgur.com/a/WjEaX2Q]
