@@ -1,0 +1,32 @@
+# 3. Scale Up Infrastructure
+
+## Infrastructure Diagram
+![Scaled Up Architecture](https://imgur.com/a/jqWvrAz)
+
+## Description
+This design separates the web, application, and database layers into dedicated servers and adds load balancer redundancy.
+
+## Components and Their Roles
+
+### 1. Load Balancer Cluster (2 HAProxy Servers)
+* **Why:** To eliminate the Load Balancer as a Single Point of Failure (SPOF). We use two HAProxy servers in a cluster (Active-Passive or Active-Active) to ensure 100% uptime at the entry point.
+
+### 2. Dedicated Web Server (Nginx)
+* **Why:** By moving Nginx to its own server, we ensure it has all the resources (CPU/RAM) needed to handle HTTP requests and serve static files without being affected by heavy database queries or application logic.
+
+### 3. Dedicated Application Server
+* **Why:** This server is solely responsible for executing the code. Separating it allows us to scale the "logic" part of the site independently from the "web" or "data" parts.
+
+### 4. Dedicated Database Server (MySQL)
+* **Why:** Databases are very resource-intensive. A dedicated server allows MySQL to have its own disk I/O and memory, preventing it from slowing down other services.
+
+---
+
+## Technical Specifics
+* **Redundancy:** The LB cluster ensures high availability.
+* **Separation of Concerns:** Each server does exactly one job, making the system easier to debug and optimize.
+* **Private Network:** In this setup, the DB and App servers can be placed in a private network, only allowing the Web server to communicate with them, which significantly increases security.
+
+## Identified Issues
+* **Complexity:** Managing more servers requires automation tools.
+* **Cost:** More servers mean higher infrastructure costs.
